@@ -1,0 +1,10 @@
+opencv-contrib-python-headless
+tensorflow-cpu==1.15
+streamlit==0.65.2
+numpy
+pandas
+pillow
+keras==2.3.0
+pathlib
+matplotlib
+python-resize-image
