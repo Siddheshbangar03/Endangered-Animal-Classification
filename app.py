@@ -3,16 +3,13 @@ import pickle
 import numpy as np
 import pandas as pd
 import itertools
-import keras
-from sklearn import metrics, model_selection
-from sklearn.metrics import confusion_matrix
 from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
-from keras.models import Sequential
-from keras import optimizers
-from keras.preprocessing import image
-from keras.layers import Dropout, Flatten, Dense
-from keras import applications
-from keras.utils import to_categorical
+from tensorflow.keras.models import Sequential
+from tensorflow.keras import optimizers
+from tensorflow.keras.preprocessing import image
+from tensorflow.keras.layers import Dropout, Flatten, Dense
+from tensorflow.keras import applications
+from tensorflow.keras.utils import to_categorical
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import math
@@ -22,10 +19,13 @@ import os
 import random
 import shutil
 import glob
+from sklearn import metrics, model_selection
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import LabelEncoder
-from keras.optimizers import Adam
-from keras.applications.resnet50 import preprocess_input
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.applications.resnet50 import preprocess_input
 import tensorflow as tf
+
 
 # Streamlit app config
 st.set_page_config(
