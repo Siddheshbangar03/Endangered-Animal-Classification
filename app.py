@@ -26,127 +26,96 @@ from sklearn.preprocessing import LabelEncoder
 from keras.optimizers import Adam
 from keras.applications.resnet50 import preprocess_input
 import tensorflow as tf
-import streamlit as st
 
-
+# Streamlit app config
 st.set_page_config(
     page_title="Endangered Animal Classification",
-    page_icon = ":lion_face:",
-    initial_sidebar_state = 'auto'
+    page_icon=":lion_face:",
+    initial_sidebar_state='auto'
 )
 
+# Load pre-trained models
 vgg16 = applications.VGG16(include_top=False, weights='imagenet')
-# Load your pre-trained CNN
 model = tf.keras.models.load_model('endanger.h5')
+
 img_width, img_height = 224, 224
-train_data_dir = "Data\Train"
+train_data_dir = "Data/Train"
 batch_size = 50
 datagen = ImageDataGenerator(rescale=1. / 255)
 generator_top = datagen.flow_from_directory(
-         train_data_dir,
-         target_size=(img_width, img_height),
-         batch_size=batch_size,
-         class_mode='categorical',
-         shuffle=False)
+    train_data_dir,
+    target_size=(img_width, img_height),
+    batch_size=batch_size,
+    class_mode='categorical',
+    shuffle=False)
 
-def test_single_image(path):
-    animals = ['African_Elephant','Amur_Leopard','Arctic_Fox','Chimpanzee','Jaguars','Lion','Orangutan','Panda','Panthers','Rhino','cheetahs','Himalyan_Bear','Goat','Leopard','Changtang']
-    images = read_image(path)
-    time.sleep(.5)
+# Animal categories
+animals = ['African_Elephant', 'Amur_Leopard', 'Arctic_Fox', 'Chimpanzee', 'Jaguars', 'Lion', 'Orangutan', 'Panda',
+           'Panthers', 'Rhino', 'Cheetahs', 'Himalayan_Bear', 'Goat', 'Leopard', 'Changtang']
+
+def read_image(file):
+    img = load_img(file, target_size=(224, 224))
+    img = img_to_array(img)
+    img = np.expand_dims(img, axis=0)
+    img /= 255.
+    return img
+
+def test_single_image(image_file):
+    images = read_image(image_file)
     bt_prediction = vgg16.predict(images)
+    predict_prob = model.predict([bt_prediction])
+    predict_classes = np.argmax(predict_prob, axis=1)
     
-    predict_prob=model.predict([bt_prediction])
-    predict_classes=np.argmax(predict_prob,axis=1)
-    for idx, animals, x in zip(range(0,15), animals , predict_prob[0]):
-        print("ID: {}, Label: {} {}%".format(idx, animals, round(x*100,2) ))
-    print('Final Decision:')
-    time.sleep(.5)
-    for x in range(3):
-        print('.'*(x+1))
-        time.sleep(.2)
-
-    class_predicted=model.predict([bt_prediction])
-    class_predicted=np.argmax(class_predicted,axis=1)
+    class_predicted = model.predict([bt_prediction])
+    class_predicted = np.argmax(class_predicted, axis=1)
     class_dictionary = generator_top.class_indices
     inv_map = {v: k for k, v in class_dictionary.items()}
-    print("ID: {}, Label: {}".format(class_predicted[0], inv_map[class_predicted[0]]))
-    endanger = st.write("Label: {}".format(inv_map[class_predicted[0]]))
+    
+    return inv_map[class_predicted[0]], round(np.max(predict_prob[0]) * 100, 2)
 
-def read_image(file_path):
-    print("[INFO] loading and preprocessing image...")
-    image = load_img(file_path, target_size=(224, 224))
-    image = img_to_array(image)
-    image = np.expand_dims(image, axis=0)
-    image /= 255.
-    return image
+# Streamlit App Interface
+st.title('Endangered Animal Classification')
+st.header('Machine Learning Mini Project')
 
-#path = "Data/Test/Arctic_Fox/367.jpg"
-st.title(':red[Endangered] *_Animal Classification_*')
-st.header('Machine Learning Mini Project', divider='green')
+# Upload Image
+uploaded_file = st.file_uploader("Upload an image of an animal", type=["jpg", "jpeg", "png"])
 
-with st.form('form', clear_on_submit = True):
-    path = st.text_input("Please Select the Image path for Identyfying Animal")
-    st.form_submit_button(label='Identify the Animal')
-st.image(path, caption="Uploaded Image of Animal", use_column_width=True)
-test_single_image(path)
-
-st.info('Please click the below button to know more about the Animal.', icon="ℹ️")
-col1, col2, col3, col4, col5 = st.columns([1,1,1,1,1])
-with col1:
-    if st.button('African Elephant'):
-        st.write('This is Endangered Animal. Left 415000')
-with col2:
-    if st.button('Amur Leopard'):
-        st.write('This is Endangered Animal. Left - 320')
-with col3:
-    if st.button('Arctic Fox'):
-        st.write('This is Endangered Animal. Left - 2000')
-with col4:
-    if st.button('Chimpanzee'):
-        st.write('This is Endangered Animal. Left - 52800')
-with col5:
-    if st.button('Jaguars'):
-        st.write('This is Endangered Animal. Left - 173000')
-with col1:
-    if st.button('Lion'):
-        st.write('This is Endangered Animal. Left - 70000')
-with col2:
-    if st.button('Orangutan'):
-        st.write('This is Endangered Animal. Left - 100000')
-with col3:
-    if st.button('Panda'):
-        st.write('This is Endangered Animal. Left - 2464')
-with col4:
-    if st.button('Panthers'):
-        st.write('This is Endangered Animal. Left - 2767')
-with col5:
-    if st.button('Rhino'):
-        st.write('This is Endangered Animal. Left - 27000')
-with col1:
-    if st.button('Cheetahs'):
-        st.write('This is Endangered Animal. Left - 6517')
-with col2:
-    if st.button('Himalyan Bear'):
-        st.write('This is Endangered Animal. Left - 100000')
-with col3:
-    if st.button('Goat'):
-        st.write('This is Not Endangered Animal.')
-with col4:
-    if st.button('Leopard'):
-        st.write('This is Not Endangered Animal.')
-with col5:
-    if st.button('Changtang'):
-        st.write('This is Endangered Animal. Left - 15220')
-
-st.text("")
-st.text("")
-st.text("")
-st.text("")
-st.text("")
-
-st.subheader('Made by')
-st.subheader(':green[Aditya Satheesan]')
-st.subheader(':green[Siddhesh Bangar]')
-st.subheader(':green[Zaid Khalfe]')
-st.subheader(':green[Samrudhi Jagadale]')
-
+if uploaded_file is not None:
+    st.image(uploaded_file, caption="Uploaded Image", use_column_width=True)
+    
+    # Test the uploaded image
+    animal_name, confidence = test_single_image(uploaded_file)
+    
+    st.success(f"Identified Animal: {animal_name} with {confidence}% confidence.")
+    
+    # Display endangered information based on the identified animal
+    if animal_name == 'African_Elephant':
+        st.write('This is an Endangered Animal. Left: 415,000')
+    elif animal_name == 'Amur_Leopard':
+        st.write('This is an Endangered Animal. Left: 320')
+    elif animal_name == 'Arctic_Fox':
+        st.write('This is an Endangered Animal. Left: 2,000')
+    elif animal_name == 'Chimpanzee':
+        st.write('This is an Endangered Animal. Left: 52,800')
+    elif animal_name == 'Jaguars':
+        st.write('This is an Endangered Animal. Left: 173,000')
+    elif animal_name == 'Lion':
+        st.write('This is an Endangered Animal. Left: 70,000')
+    elif animal_name == 'Orangutan':
+        st.write('This is an Endangered Animal. Left: 100,000')
+    elif animal_name == 'Panda':
+        st.write('This is an Endangered Animal. Left: 2,464')
+    elif animal_name == 'Panthers':
+        st.write('This is an Endangered Animal. Left: 2,767')
+    elif animal_name == 'Rhino':
+        st.write('This is an Endangered Animal. Left: 27,000')
+    elif animal_name == 'Cheetahs':
+        st.write('This is an Endangered Animal. Left: 6,517')
+    elif animal_name == 'Himalayan_Bear':
+        st.write('This is an Endangered Animal. Left: 100,000')
+    elif animal_name == 'Goat':
+        st.write('This is not an Endangered Animal.')
+    elif animal_name == 'Leopard':
+        st.write('This is not an Endangered Animal.')
+    elif animal_name == 'Changtang':
+        st.write('This is an Endangered Animal. Left: 15,220')
