@@ -6,7 +6,7 @@ import itertools
 import keras
 from sklearn import metrics, model_selection
 from sklearn.metrics import confusion_matrix
-from keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
+from tensorflow.keras.preprocessing.image import ImageDataGenerator, img_to_array, load_img
 from keras.models import Sequential
 from keras import optimizers
 from keras.preprocessing import image
