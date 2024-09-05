@@ -8,5 +8,8 @@ The primary goal of this project was to develop a robust and accurate classifica
 
 The CNN model exhibited impressive accuracy in classifying endangered animals, providing a valuable tool for researchers, conservationists, and wildlife enthusiasts.
 
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 #WildlifeConservation #CNN #DeepLearning #EndangeredSpecies #TechForGood
