@@ -32,4 +32,3 @@ thread==2.0.5
 trove_classifiers==2024.9.12
 urllib3_secure_extra==0.1.0
 xmlrpclib==1.0.1
-~ensorflow_intel==2.13.0
